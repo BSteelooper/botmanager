@@ -36,3 +36,18 @@ function logActie(string $type, string $omschrijving, ?int $chat_id = null): voi
     $stmt->execute([$type, $omschrijving, $chat_id]);
 }
 
+function forwardToTestChannel(array $data): void {
+    global $pdo;
+    $botToken = getBotToken('notification_bot');
+    $from_chat_id = $data['message']['chat']['id'];
+    $message_id = $data['message']['message_id'];
+    $test_chat_id = (int) getInstelling('test_chat_id');
+
+    if ($test_chat_id) {
+        file_get_contents("https://api.telegram.org/bot$botToken/forwardMessage?" . http_build_query([
+            'chat_id' => $test_chat_id,
+            'from_chat_id' => $from_chat_id,
+            'message_id' => $message_id
+        ]));
+    }
+}
